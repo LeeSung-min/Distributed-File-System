@@ -2,8 +2,7 @@
 """
 demo.py
 
-Demonstrates every rubric-required operation and prints the Paxos log
-at the end.  Run this to generate the screenshots/logs.
+Run this to generate logs.
 
     python demo.py
 """
