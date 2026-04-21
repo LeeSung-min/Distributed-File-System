@@ -55,8 +55,7 @@ class ChordNode:
 
     In a real deployment each node would live in its own process and
     communicate over sockets. Here every node is a Python object and
-    calls are direct method calls — that is fine for learning because
-    the routing logic is identical; only the transport layer changes.
+    calls are direct method calls.
     """
 
     def __init__(self, node_id: Optional[int] = None, name: str = ""):
@@ -116,7 +115,7 @@ class ChordNode:
 
         If key falls between us and our successor, our successor is the
         answer. Otherwise we forward to the closest preceding finger and
-        let that node continue the search — O(log N) hops total.
+        let that node continue the search.
         """
         if in_range(key, self.id, self.successor.id, inclusive_hi=True):
             return self.successor

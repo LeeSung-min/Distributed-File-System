@@ -55,14 +55,14 @@ class TestChordBasics(unittest.TestCase):
         # Arc that wraps past zero
         self.assertTrue(in_range(1, 10, 5))   # 1 < 5
         self.assertTrue(in_range(11, 10, 5))  # 11 > 10
-        self.assertFalse(in_range(7, 10, 5))  # 5 < 7 < 10 — NOT in arc
+        self.assertFalse(in_range(7, 10, 5))  # 5 < 7 < 10 - NOT in arc
 
     def test_single_node_ring(self):
         n = ChordNode(node_id=42, name="solo")
         n.create()
         self.assertIs(n.successor, n)
         # stabilize() runs in background and will set predecessor to self
-        # almost immediately in a one-node ring — both None and self are valid.
+        # almost immediately in a one-node ring, both None and self are valid.
         self.assertIn(n.predecessor, (None, n))
         n.stop()
 

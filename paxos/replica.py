@@ -3,7 +3,6 @@ paxos/replica.py
 
 Simplified Paxos for replicated DFS metadata.
 
-The protocol here matches the assignment's simplified model:
   1. Leader picks a ballot number t and broadcasts ACCEPT(op, t).
   2. Each replica responds with LEARN(op, t) if it hasn't seen a
      higher ballot for this slot.
@@ -14,10 +13,6 @@ The protocol here matches the assignment's simplified model:
 Fault model: crash-only. We do not handle Byzantine behavior.
 Messages can be delayed or lost (simulated by ignoring timed-out
 replicas) but we assume no corruption.
-
-In a real system ACCEPT/LEARN messages would be sent over the network.
-Here each Replica is a Python object and calls are local, so the
-"network" is just method invocation — the protocol logic is identical.
 """
 
 import threading
@@ -66,7 +61,7 @@ class Replica:
         self._write_log(f"INIT replica_id={replica_id}")
 
     # ------------------------------------------------------------------
-    # Message handlers — called by the leader
+    # Message handlers: called by the leader
     # ------------------------------------------------------------------
 
     def receive_accept(self, msg: PaxosMessage) -> Optional[PaxosMessage]:
@@ -75,7 +70,7 @@ class Replica:
 
         We promise to learn this op if the ballot is >= anything we have
         seen before. If we have seen a higher ballot, we reject by
-        returning None — the leader should retry with a higher ballot.
+        returning None, the leader should retry with a higher ballot.
         """
         with self._lock:
             if msg.ballot < self._highest_ballot:
@@ -128,7 +123,7 @@ class Replica:
             return list(self._committed_log)
 
     # ------------------------------------------------------------------
-    # Human-readable Paxos log (required by rubric)
+    # Human-readable Paxos log
     # ------------------------------------------------------------------
 
     def _write_log(self, message: str):
@@ -148,9 +143,6 @@ class PaxosLeader:
     One leader drives consensus for a named group (e.g. "metadata" or
     a specific filename). The ballot number increments on every proposal
     so that replicas can totally order all operations.
-
-    In a real implementation the leader role might rotate. For this
-    assignment a fixed leader per group is sufficient.
     """
 
     def __init__(self, leader_id: int, replicas: list[Replica]):

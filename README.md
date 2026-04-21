@@ -88,12 +88,12 @@ Pages are written directly to Chord without Paxos because they are immutable
 
 ### Distributed Sort (`dfs/sort.py`)
 
-1. **SCAN** — read all pages of input file, parse `key,value` records.
-2. **ROUTE** — for each record, call `find_successor(sha1_int(key))` to
+1. **SCAN** - read all pages of input file, parse `key,value` records.
+2. **ROUTE** - for each record, call `find_successor(sha1_int(key))` to
    determine the responsible Chord peer; insert into that peer's local
    sorted list via `bisect.insort`.
-3. **ASSEMBLE** — collect all peer segments, final `sorted()` by raw key.
-4. **WRITE** — store result as a new DFS file.
+3. **ASSEMBLE** - collect all peer segments, final `sorted()` by raw key.
+4. **WRITE** - store result as a new DFS file.
 
 ## Fault Model
 

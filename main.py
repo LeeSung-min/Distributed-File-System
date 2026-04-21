@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-main.py — entry point for the Distributed File System.
+main.py: entry point for the Distributed File System.
 
 Bootstraps a Chord ring and DFS, then dispatches CLI commands.
 
@@ -35,7 +35,7 @@ logging.getLogger("chord.node").setLevel(logging.WARNING)
 
 def build_system(num_chord_nodes: int = 5, num_paxos_replicas: int = 3) -> DFS:
     """
-    Boot the full stack: Chord ring → DFS API layer.
+    Boot the full stack: Chord ring -> DFS API layer.
     """
     ring = ChordRing(num_nodes=num_chord_nodes)
     ring.bootstrap(settle_time=1.5)

@@ -2,7 +2,7 @@
 chord/ring.py
 
 Convenience wrapper that spins up a multi-node Chord ring in a single
-process. In production you'd replace this with actual network nodes.
+process.
 """
 
 import time

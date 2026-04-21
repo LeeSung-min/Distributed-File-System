@@ -3,15 +3,11 @@ dfs/models.py
 
 Plain data classes for the two core DFS objects.
 
-FileMetadata  — the "inode" of our DFS. Stored in the Chord ring
+FileMetadata  - the "inode" of our DFS. Stored in the Chord ring
                 under hash("metadata:" + filename).
 
-PageDescriptor — describes where one chunk of file content lives.
+PageDescriptor - describes where one chunk of file content lives.
                  The actual bytes are stored in Chord under page_key.
-
-These classes deliberately stay simple: no business logic, just
-structured data with JSON serialization. The DFS API layer owns all
-the logic that operates on them.
 """
 
 import json
@@ -26,12 +22,11 @@ class PageDescriptor:
     """
     One page of a distributed file.
 
-    page_no  — zero-based index within the file.
-    guid     — stable identifier used when logging/debugging.
-    page_key — the integer key under which raw bytes live in Chord.
-    size     — byte count of this page's content.
-    replicas — list of node names that hold a copy (for display only;
-               actual replication is handled by the Paxos layer).
+    page_no  - zero-based index within the file.
+    guid     - stable identifier used when logging/debugging.
+    page_key - the integer key under which raw bytes live in Chord.
+    size     - byte count of this page's content.
+    replicas - list of node names that hold a copy.
     """
     page_no: int
     guid: str
@@ -50,15 +45,15 @@ class PageDescriptor:
 @dataclass
 class FileMetadata:
     """
-    Logical file descriptor — analogous to an inode.
+    Logical file descriptor.
 
-    filename   — the user-visible name.
-    size_bytes — total byte count across all pages.
-    num_pages  — length of the pages list.
-    pages      — ordered list of PageDescriptors.
-    version    — incremented on every mutation so stale readers can
+    filename   - the user-visible name.
+    size_bytes - total byte count across all pages.
+    num_pages  - length of the pages list.
+    pages      - ordered list of PageDescriptors.
+    version    - incremented on every mutation so stale readers can
                  detect conflicts.
-    created_at — unix timestamp of first touch().
+    created_at - unix timestamp of first touch().
     """
     filename: str
     size_bytes: int = 0

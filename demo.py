@@ -3,7 +3,7 @@
 demo.py
 
 Demonstrates every rubric-required operation and prints the Paxos log
-at the end.  Run this to generate the screenshots/logs your report needs.
+at the end.  Run this to generate the screenshots/logs.
 
     python demo.py
 """
@@ -42,13 +42,13 @@ def main():
     print("DFS ready.\n")
 
     # ------------------------------------------------------------------ #
-    section("2. touch — create files")
+    section("2. touch - create files")
     dfs.touch("notes.txt")
     dfs.touch("sample_data.csv")
     print("Created: notes.txt, sample_data.csv")
 
     # ------------------------------------------------------------------ #
-    section("3. append — upload local content")
+    section("3. append - upload local content")
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
@@ -65,13 +65,13 @@ def main():
     print("Appended content to both files.")
 
     # ------------------------------------------------------------------ #
-    section("4. ls — list all files")
+    section("4. ls - list all files")
     files = dfs.ls()
     for fname in files:
         print(f"  {fname}")
 
     # ------------------------------------------------------------------ #
-    section("5. stat — file metadata")
+    section("5. stat - file metadata")
     stat = dfs.stat("notes.txt")
     for k, v in stat.items():
         if k != "pages":
@@ -80,31 +80,31 @@ def main():
         print(f"    page {p['page_no']}: guid={p['guid']} size={p['size']}")
 
     # ------------------------------------------------------------------ #
-    section("6. read — full contents")
+    section("6. read - full contents")
     data = dfs.read("notes.txt")
     print(data.decode())
 
     # ------------------------------------------------------------------ #
-    section("7. head — first 2 lines")
+    section("7. head - first 2 lines")
     print(dfs.head("notes.txt", n=2))
 
     # ------------------------------------------------------------------ #
-    section("8. tail — last 2 lines")
+    section("8. tail - last 2 lines")
     print(dfs.tail("notes.txt", n=2))
 
     # ------------------------------------------------------------------ #
-    section("9. sort_file — distributed sort of sample_data.csv")
+    section("9. sort_file - distributed sort of sample_data.csv")
     sort_file(dfs, "sample_data.csv", "sorted_output.csv")
     print("\nSorted output:")
     print(dfs.read("sorted_output.csv").decode())
 
     # ------------------------------------------------------------------ #
-    section("10. verify — correctness check")
+    section("10. verify - correctness check")
     ok = verify_sorted(dfs, "sorted_output.csv")
     print(f"Sort verification: {'PASSED ✓' if ok else 'FAILED ✗'}")
 
     # ------------------------------------------------------------------ #
-    section("11. delete — remove a file")
+    section("11. delete - remove a file")
     dfs.delete_file("notes.txt")
     remaining = dfs.ls()
     print("Files after deleting notes.txt:")

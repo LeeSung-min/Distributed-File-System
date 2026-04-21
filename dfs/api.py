@@ -1,11 +1,7 @@
 """
 dfs/api.py
 
-The DFS API layer.  This is the piece that "glues" Chord (routing)
-and Paxos (consistency) together into something that looks like a
-simple file system.
-
-Design notes worth understanding:
+Design notes:
   - Every filename maps to exactly one metadata_key via sha1_int().
     This makes metadata placement deterministic and reproducible.
   - Each page is also keyed deterministically: sha1_int(filename:N).
@@ -29,7 +25,7 @@ from dfs.models import FileMetadata, PageDescriptor
 
 log = logging.getLogger(__name__)
 
-# Maximum bytes per page.  64 KB is a reasonable default.
+# Maximum bytes per page. 64 KB is a reasonable default.
 PAGE_SIZE = 64 * 1024
 
 
@@ -108,8 +104,7 @@ class DFS:
                     # Tombstone: remove the key so ls() stops seeing it.
                     _ring.get_node_for_key(key).local_delete(key)
                 else:
-                    # Serialize the plain dict directly — no FileMetadata
-                    # reconstruction needed here, we just want the bytes.
+                    # Serialize the plain dict directly.
                     raw = _json.dumps(meta_dict).encode()
                     _ring.get_node_for_key(key).local_put(key, raw)
 
@@ -157,7 +152,7 @@ class DFS:
 
     def touch(self, filename: str):
         """
-        Create an empty file.  Raises FileExistsError if it already exists.
+        Create an empty file. Raises FileExistsError if it already exists.
         """
         if self._load_metadata(filename) is not None:
             raise FileExistsError(f"File already exists: {filename!r}")
@@ -196,8 +191,7 @@ class DFS:
             chunk = data[offset: offset + PAGE_SIZE]
             pkey = _page_key(filename, meta.num_pages)
 
-            # Write the raw page bytes to Chord — no Paxos needed here
-            # because pages are content-addressed and immutable.
+            # Write the raw page bytes to Chord.
             responsible = self.ring.get_node_for_key(pkey)
             responsible.local_put(pkey, chunk)
             log.debug("Stored page %d for %r at node %s (%d bytes)",
@@ -247,7 +241,7 @@ class DFS:
 
     def delete_file(self, filename: str):
         """
-        Remove a file.  Deletes all pages from Chord, then removes metadata.
+        Remove a file. Deletes all pages from Chord, then removes metadata.
         """
         meta = self._load_metadata(filename)
         if meta is None:
@@ -268,10 +262,7 @@ class DFS:
     def ls(self) -> list[str]:
         """
         List all files in the DFS.
-
-        We scan all nodes for metadata keys.  This is O(N * keys_per_node)
-        which is fine for a learning prototype.  A production system would
-        maintain a separate directory object.
+        We scan all nodes for metadata keys.
         """
         filenames = []
         seen_keys: set[int] = set()

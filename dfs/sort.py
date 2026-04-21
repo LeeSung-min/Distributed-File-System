@@ -13,13 +13,6 @@ The algorithm:
   4. ASSEMBLE — collect every peer's sorted segment, do a final merge sort
              by raw key to produce a globally sorted sequence.
   5. WRITE — store the sorted output as a new DFS file.
-
-Why routing to peers still matters:
-  Each peer only holds its slice of the key space in memory.  In a real
-  multi-machine system this keeps memory usage per node bounded.  The final
-  merge step is O(N log N) but operates on already-sorted segments, so in
-  practice it is a fast k-way merge.  Routing by hash(key) is exactly how
-  MapReduce-style distributed sorts partition work.
 """
 
 import bisect
@@ -55,7 +48,7 @@ def sort_file(dfs: "DFS", filename: str, output_filename: str):
     log.info("sort_file: %r -> %r", filename, output_filename)
 
     # ------------------------------------------------------------------ #
-    # Step 1 — SCAN
+    # Step 1 - SCAN
     # ------------------------------------------------------------------ #
     raw = dfs.read(filename)
     text = raw.decode(errors="replace")
@@ -73,7 +66,7 @@ def sort_file(dfs: "DFS", filename: str, output_filename: str):
     log.info("sort_file: parsed %d records from %r", len(all_records), filename)
 
     # ------------------------------------------------------------------ #
-    # Step 2 — ROUTE: assign each record to a Chord peer by hash(key)
+    # Step 2 - ROUTE: assign each record to a Chord peer by hash(key)
     # ------------------------------------------------------------------ #
     peer_buckets: dict[int, list[tuple[str, str]]] = defaultdict(list)
     peer_names: dict[int, str] = {}
@@ -92,11 +85,10 @@ def sort_file(dfs: "DFS", filename: str, output_filename: str):
         log.debug("  peer %s: %d records", peer_names[nid], len(bucket))
 
     # ------------------------------------------------------------------ #
-    # Step 3 — ASSEMBLE: collect all peer segments and globally sort
+    # Step 3 - ASSEMBLE: collect all peer segments and globally sort
     #
     # Each peer segment is already sorted by raw key (bisect.insort).
-    # We gather them all and do a final sort() which in practice is a
-    # fast merge of already-sorted runs.
+    # We gather them all and do a final sort().
     # ------------------------------------------------------------------ #
     merged: list[tuple[str, str]] = []
     for nid in sorted(peer_buckets.keys()):
@@ -108,7 +100,7 @@ def sort_file(dfs: "DFS", filename: str, output_filename: str):
     sorted_content = "\n".join(sorted_lines) + "\n"
 
     # ------------------------------------------------------------------ #
-    # Step 4 — WRITE: store as a new DFS file
+    # Step 4 - WRITE: store as a new DFS file
     # ------------------------------------------------------------------ #
     dfs.touch(output_filename)
 
